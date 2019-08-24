@@ -1,3 +1,6 @@
+"""
+Package errors.
+"""
 
 
 class BaseError(Exception):
