@@ -8,22 +8,22 @@ from . import mappers
 
 def model(maybe_cls=None, name=None, ns=None, ns_map=None, order=None, **kwargs):
     """
-    Decorator `@model` maps a class to an XML element. The decorator uses a class
-    name as a default element name. The default name can be changed using the decorator
-    attribute `name`. The `ns` attribute defines a namespace of the element. By default
-    class fields are serialized in in-class definition order. The order can be changed
+    The decorator maps a class to an XML element. It uses a class
+    name as a default element name. The default name can be altered using the decorator
+    `name` argument. The `ns` argument defines a namespace of the element. By default
+    class fields are serialized in in-class definition order. The order can be altered
     using `order` attribute.
 
-    Internally the decorator adds `dunder <https://wiki.python.org/moin/DunderAlias>`_\
-    attributes.
+    Internally the decorator adds a `dunder <https://wiki.python.org/moin/DunderAlias>`_\
+    attribute.
 
     :param maybe_cls: decorated class if it is used as `@model` or `None` if it is used as `@model()`
-    :param name: model name. If `None` class name will be used
-    :param ns: element namespace. If `None` empty namespace will be used or if the model
-               is a nested one - namespace is inherited from the parent model
-    :param ns_map: mapping from namespace prefix to full name. If the model is a nested one merged with the parent map
-    :param order: class fields serialization order. If `None` in-class definition order is used
-    :param kwargs: arguments that will be passed to `attr.ib`
+    :param str name: model name. If `None` class name will be used
+    :param str ns: element namespace. If `None` empty namespace will be used or if the model
+               is a nested one - namespace is inherited from the containing model
+    :param dict ns_map: mapping from a namespace prefix to a full name. It is applied to the current model and it's elements and all nested models
+    :param tuple order: class fields serialization order. If `None` in-class definition order is used
+    :param kwargs: arguments that will be passed to :py:func:`attr.ib`
     """
 
     def decorator(cls):
@@ -42,11 +42,11 @@ def model(maybe_cls=None, name=None, ns=None, ns_map=None, order=None, **kwargs)
 
 def attribute(name=None, **kwargs):
     """
-    Function `attribute` maps a class field to an XML attribute. The field name is used
-    as a default attribute name. The default name can be changed using the parameter `name`.
+    The Function maps a class field to an XML attribute. The field name is used
+    as a default attribute name. The default name can be altered using the `name` argument.
 
-    :param name: attribute name. If `None` field name will be used
-    :param kwargs: arguments that will be passed to `attr.ib`
+    :param str name: attribute name. If `None` field name will be used
+    :param kwargs: arguments that will be passed to :py:func:`attr.ib`
     """
 
     has_default = 'default' in kwargs or 'factory' in kwargs
@@ -60,17 +60,17 @@ def attribute(name=None, **kwargs):
 
 def field(name=None, ns=None, ns_map=None, idx=None, **kwargs):
     """
-    Function `field` maps a class field to an XML element. The field name is used
-    as a default element name. The default name can be changed using parameter `name`.
-    The `ns` parameter defines the namespace of the element.
+    The Function maps a class field to an XML element. The field name is used
+    as a default element name. The default name can be altered using `name` argument.
+    The `ns` argument defines the namespace of the element.
 
-    Internally the decorator adds some metainformation to `attrib.metadata`.
+    Internally the decorator adds some metainformation to :py:attr:`attr.ib.metadata`.
 
-    :param name: element name. If `None` field name will be used
-    :param ns: element namespace. If `None` the namespace is inherited from the containing model
-    :param ns_map: mapping from namespace prefix to full name. Merged with the parent one
-    :param idx: element index in the xml document. If `None` 1 is used
-    :param kwargs: arguments that will be passed to `attr.ib`
+    :param str name: element name. If `None` field name will be used
+    :param str ns: element namespace. If `None` the namespace is inherited from the containing model
+    :param dict ns_map: mapping from a namespace prefix to a full name.
+    :param int idx: element index in the xml document. If `None` 1 is used
+    :param kwargs: arguments that will be passed to :py:func:`attr.ib`
     """
 
     has_default = 'default' in kwargs or 'factory' in kwargs
@@ -84,15 +84,15 @@ def field(name=None, ns=None, ns_map=None, idx=None, **kwargs):
 
 def nested(cls, name=None, ns=None, ns_map=None, idx=None, **kwargs):
     """
-    Function `nested` maps a class to an XML element. `nested` is used when a `@model`
+    The Function maps a class to an XML element. `nested` is used when a :py:func:`paxb.model`
     decorated class contains another one as a field.
 
-    :param cls: nested object class. `cls` must be an instance of `@model` decorated class
-    :param name: element name. If `None` decorator name attribute will be used
-    :param ns: element namespace. If `None` decorator ns attribute will be used
-    :param ns_map: mapping from namespace prefix to full name. Merged with the parent one
-    :param idx: element index in the xml document. If `None` 1 is used
-    :param kwargs: arguments that will be passed to `attr.ib`
+    :param cls: nested object class. `cls` must be an instance of :py:func:`paxb.model` decorated class
+    :param str name: element name. If `None` model decorator `name` attribute will be used
+    :param str ns: element namespace. If `None` model decorator ns attribute will be used
+    :param dict ns_map: mapping from a namespace prefix to a full name. It is applied to the current model and it's elements and all nested models
+    :param int idx: element index in the xml document. If `None` 1 is used
+    :param kwargs: arguments that will be passed to :py:func:`attr.ib`
     """
 
     if not isinstance(cls, type):
@@ -108,13 +108,13 @@ def nested(cls, name=None, ns=None, ns_map=None, idx=None, **kwargs):
 
 def wrapper(path, wrapped, ns=None, ns_map=None, idx=None):
     """
-    Function `wrapper` is used to map a class field to an XML element that is contained by a subelement.
+    The Function is used to map a class field to an XML element that is contained by a subelement.
 
-    :param path: full path to the `wrapped` element. Element names are separated by slashes
-    :param wrapped: the wrapped element
-    :param ns: element namespace. If `None` the namespace is inherited from the containing model
-    :param ns_map: mapping from namespace prefix to full name. Merged with the parent one
-    :param idx: element index in the xml document. If `None` 1 is used
+    :param str path: full path to the `wrapped` element. Element names are separated by slashes
+    :param wrapped: a wrapped element
+    :param str ns: element namespace. If `None` the namespace is inherited from the containing model
+    :param dict ns_map: mapping from a namespace prefix to a full name. It is applied to the current model and it's elements and all nested models
+    :param int idx: element index in the xml document. If `None` 1 is used
     """
 
     wrapped.metadata['paxb.mapper'] = mappers.WrapperXmlMapper(path, wrapped.metadata['paxb.mapper'], ns, ns_map, idx)
@@ -124,7 +124,7 @@ def wrapper(path, wrapped, ns=None, ns_map=None, idx=None):
 
 def as_list(wrapped):
     """
-    Function `as_list` maps a class list field to an XML element list. Wrapped element
+    The Function maps a class list field to an XML element list. Wrapped element
     can be field or nested model.
 
     :param wrapped: list element type
@@ -137,16 +137,17 @@ def as_list(wrapped):
 
 def from_xml(cls, xml, envelope=None, name=None, ns=None, ns_map=None, required=True):
     """
-    Deserializes xml string to object of `cls` class. `cls` must be a `@model` decorated class.
+    Deserializes xml string to object of `cls` type. `cls` must be a :py:func:`paxb.model` decorated class.
 
     :param cls: class the deserialized object is instance of
     :param xml: xml string or xml tree to deserialize the object from
-    :param envelope: root tag where the serializing object will be looked for
-    :param name: name of the serialized object element. If `None` annotation argument will be used
-    :param ns: namespace of the serialized object element. If `None` annotation argument will be used
-    :param ns_map: mapping from namespace prefix to full name.
-    :param required: is the serialized object element required. If element not found and `required` is `True`
-           `DeserializationError` will be raised otherwise `None` is returned
+    :type xml: :py:class:`str` or :py:class:`xml.etree.ElementTree.ElementTree`
+    :param str envelope: root tag where the serializing object will be looked for
+    :param str name: name of the serialized object element. If `None` model decorator `name` argument will be used
+    :param str ns: namespace of the serialized object element. If `None` model decorator `ns` argument will be used
+    :param dict ns_map: mapping from a namespace prefix to a full name
+    :param bool required: is the serialized object element required. If element not found and `required` is ``True``
+           :py:exc:`paxb.exceptions.DeserializationError` will be raised otherwise ``None`` is returned
     :return: deserialized object
     """
 
@@ -169,17 +170,19 @@ def from_xml(cls, xml, envelope=None, name=None, ns=None, ns_map=None, required=
 
 def to_xml(obj, envelope=None, name=None, ns=None, ns_map=None, encoder=default_encoder, **kwargs):
     """
-    Serializes a paxb class object to an xml string. Object must be an instance of a `@model` decorated class.
+    Serializes a ``paxb`` model object to an xml string. Object must be an instance
+    of a :py:func:`paxb.model` decorated class.
 
     :param obj: object to be serialized
-    :param envelope: root tag name the serialized object element will be added inside.
-                     If `None` object element will be a root
-    :param name: name of the serialized object element. If `None` annotation argument will be used
-    :param ns: namespace of the serialized object element. If `None` annotation argument will be used
-    :param ns_map: mapping from namespace prefix to full name.
-    :param encoder: value encoder. If `None` `paxb.encoder` is used
-    :param kwargs: arguments that will be passed to `ElementTree.tostring` method
+    :param str envelope: root tag name the serialized object element will be added inside.
+                     If ``None`` object element will be a root
+    :param str name: name of the serialized object element. If `None` model decorator `name` argument will be used
+    :param str ns: namespace of the serialized object element. If `None` model decorator `ns` argument will be used
+    :param dict ns_map: mapping from a namespace prefix to a full name.
+    :param encoder: value encoder. If ``None`` :py:func:`paxb.encoder.encode` is used
+    :param kwargs: arguments that will be passed to :py:func:`xml.etree.ElementTree.tostring` method
     :return: serialized object xml string
+    :rtype: :py:class:`bytes` or :py:class:`str`
     """
 
     if ns_map:
