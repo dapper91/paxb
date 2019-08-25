@@ -363,7 +363,9 @@ def test_complex_xml_deserialization():
         passport_series = pb.wrap('documents/passport', pb.attr('series'))
         passport_number = pb.wrap('documents/passport', pb.attr('number'))
 
-        occupations = pb.wrap('occupations', pb.lst(pb.nested(Occupation)), ns='data', ns_map={'data': 'http://www.test22.org'})
+        occupations = pb.wrap(
+            'occupations', pb.lst(pb.nested(Occupation)), ns='data', ns_map={'data': 'http://www.test22.org'}
+        )
 
         citizenship = pb.field(default='RU')
 
@@ -398,14 +400,14 @@ def test_indexes_deserialization():
     <root>
         <element>value1</element>
         <element>value2</element>
-        
+
         <wrapper>
             <element>value3</element>
         </wrapper>
         <wrapper>
             <element>value4</element>
         </wrapper>
-        
+
         <nested>
             <element>value5</element>
         </nested>
@@ -484,3 +486,22 @@ def test_attribute_default():
 
     obj = pb.from_xml(TestModel, xml)
     assert obj.attrib is None
+
+
+def test_private_attributes():
+    xml = '''<?xml version="1.0" encoding="utf-8"?>
+    <TestModel>
+        <field1>value1</field1>
+        <field2>value2</field2>
+    </TestModel>
+    '''
+
+    @pb.model()
+    class TestModel:
+        _field1 = pb.field(name='field1')
+        __field2 = pb.field(name='field2')
+
+    obj = pb.from_xml(TestModel, xml)
+
+    assert obj._field1 == 'value1'
+    assert obj._TestModel__field2 == 'value2'

@@ -62,3 +62,12 @@ The API Documentation
    :maxdepth: 2
 
    paxb/api
+
+
+Development
+-----------
+
+.. toctree::
+   :maxdepth: 2
+
+   paxb/development

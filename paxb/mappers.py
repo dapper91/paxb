@@ -4,6 +4,8 @@ for mapping xml elements to python object fields and vise versa.
 """
 
 import abc
+import collections
+import operator as op
 import xml.etree.ElementTree as et
 
 import attr
@@ -14,9 +16,9 @@ from . import encoder as default_encoder
 
 def get_attrs(cls):
     """
-    Returns all paxb attributes of a class decorated with `@model` decorator.
+    Returns all paxb attributes of a class decorated with :py:func:`paxb.model` decorator.
 
-    :param cls: `@model` decorated class
+    :param cls: :py:func:`paxb.model` decorated class
     :return: paxb class attributes
     """
 
@@ -52,7 +54,7 @@ def drop_nones(d):
 
 def first(*args):
     """
-    Returns first not None argument.
+    Returns first not `None` argument.
     """
 
     for item in args:
@@ -76,6 +78,27 @@ def merge_dicts(*dicts):
     return result
 
 
+def reorder(fields, order, key):
+    """
+    Reorders `fields` list sorting its elements in order they appear in `order` list.
+    Elements that are not defined in `order` list keep the original order.
+
+    :param fields: elements to be reordered
+    :param order: iterable that defines a new order
+    :param key: a function of one argument that is used to extract a comparison key from each element in `fields`
+    :return: reordered elements list
+    """
+
+    ordered = collections.OrderedDict()
+    for field in fields:
+        ordered[key(field)] = field
+
+    for ord in reversed(order or ()):
+        ordered.move_to_end(ord, last=False)
+
+    return ordered.values()
+
+
 class Mapper(abc.ABC):
     """
     Base mapper class. All mappers are inherited from it.
@@ -88,10 +111,11 @@ class Mapper(abc.ABC):
 
         :param obj: object to be serialized
         :param root: root element the object will be added inside
-        :param name: element name
-        :param ns: element namespace
-        :param ns_map: mapping from namespace prefix to full name
-        :param idx: element index in the xml tree
+        :type root: :py:class:`xml.etree.ElementTree.Element`
+        :param str name: element name
+        :param str ns: element namespace
+        :param dict ns_map: mapping from namespace prefix to full name
+        :param int idx: element index in the xml tree
         :param encoder: value encoder
         :return: added xml tree node
         """
@@ -102,11 +126,12 @@ class Mapper(abc.ABC):
         Deserialization method.
 
         :param xml: xml tree to deserialize the object from
-        :param name: element name
-        :param ns: element namespace
-        :param ns_map: mapping from namespace prefix to full name
-        :param idx: element index in the xml tree
-        :param full_path: full path to the current element
+        :type xml: :py:class:`xml.etree.ElementTree.Element`
+        :param str name: element name
+        :param str ns: element namespace
+        :param dict ns_map: mapping from namespace prefix to full name
+        :param int idx: element index in the xml tree
+        :param tuple full_path: full path to the current element
         :return: deserialized object
         """
 
@@ -157,10 +182,18 @@ class FieldXmlMapper(Mapper):
         self.idx = idx
         self.required = required
 
-    def xml(self, obj, root, name=None, ns=None, ns_map=None, _=None, encoder=default_encoder):
+    def xml(self, obj, root, name=None, ns=None, ns_map=None, idx=None, encoder=default_encoder):
         name = first(self.name, name)
         ns = first(self.ns, ns)
         ns_map = merge_dicts(self.ns_map, ns_map)
+        idx = first(idx, self.idx, 1)
+
+        existing_elements = root.findall(qname(ns=ns_map.get(ns), name=name), ns_map)
+        if idx > len(existing_elements) + 1:
+            raise exc.SerializationError(
+                "serialization can't be completed because {name}[{cur}] is going to be serialized, "
+                "but {name}[{prev}] is not serialized.".format(name=name, cur=idx, prev=idx-1)
+            )
 
         if obj is None:
             if self.required:
@@ -215,7 +248,8 @@ class WrapperXmlMapper(Mapper):
         existing_elements = root.findall(qname(ns=ns_map.get(ns), name=self.name), ns_map)
         if idx > len(existing_elements) + 1:
             raise exc.SerializationError(
-                "element {} at index {} is going to be serialized, but the previous one is omitted".format(name, idx)
+                "serialization can't be completed because {name}[{cur}] is going to be serialized, "
+                "but {name}[{prev}] is not serialized.".format(name=name, cur=idx, prev=idx - 1)
             )
         if idx == len(existing_elements) + 1:
             element = et.Element(qname(ns=ns_map.get(ns), name=self.name))
@@ -295,10 +329,18 @@ class ModelXmlMapper(Mapper):
         self.idx = idx
         self.required = required
 
-    def xml(self, obj, root, name=None, ns=None, ns_map=None, _=None, encoder=default_encoder):
+    def xml(self, obj, root, name=None, ns=None, ns_map=None, idx=None, encoder=default_encoder):
         name = first(self.name, name)
         ns = first(self.ns, ns)
         ns_map = merge_dicts(self.ns_map, ns_map)
+        idx = first(idx, self.idx, 1)
+
+        existing_elements = root.findall(qname(ns=ns_map.get(ns), name=name), ns_map)
+        if idx > len(existing_elements) + 1:
+            raise exc.SerializationError(
+                "serialization can't be completed because {name}[{cur}] is going to be serialized, "
+                "but {name}[{prev}] is not serialized.".format(name=name, cur=idx, prev=idx-1)
+            )
 
         if obj is None:
             if self.required:
@@ -309,7 +351,7 @@ class ModelXmlMapper(Mapper):
         element = et.Element(qname(ns=ns_map.get(ns), name=name))
 
         serialized_fields = []
-        for field in attr.fields(self.cls):
+        for field in reorder(attr.fields(self.cls), self.order, op.attrgetter('name')):
             mapper = field.metadata.get('paxb.mapper')
             if mapper:
                 serialized = mapper.xml(getattr(obj, field.name), element, field.name, ns, ns_map, encoder=encoder)
@@ -342,6 +384,10 @@ class ModelXmlMapper(Mapper):
             mapper = attr_field.metadata.get('paxb.mapper')
             if mapper:
                 cls_kwargs[attr_field.name] = mapper.obj(xml, attr_field.name, ns, ns_map, full_path=full_path + (tag,))
+
+        # Alter class initialization arguments that start with underscore (_). It is necessary because of
+        # `attrs` library implementation specific. See https://www.attrs.org/en/stable/init.html#private-attributes.
+        cls_kwargs = {k.lstrip('_'): w for k, w in cls_kwargs.items()}
 
         cls_kwargs = drop_nones(cls_kwargs)
 
