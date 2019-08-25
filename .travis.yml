@@ -7,4 +7,6 @@ install:
   - pip install pipenv --upgrade
   - pipenv install --dev
 script:
-  - pipenv run py.test
+  - pipenv run py.test --cov=paxb tests
+after_success:
+  - codecov

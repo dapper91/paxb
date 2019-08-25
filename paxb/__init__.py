@@ -11,7 +11,7 @@
 paxb provides an efficient way of mapping between an XML document and a Python object. Using paxb
 developers can write less boilerplate code emphasizing on application business logic.
 
-As soon as paxb based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library paxb and attrs
+Since paxb based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library paxb and attrs
 API can be mixed together.
 """
 

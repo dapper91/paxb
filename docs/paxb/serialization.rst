@@ -61,7 +61,7 @@ The default behaviour can be altered using ``encoder`` argument. Encoder must be
 an encoded value and returns its :py:class:`str` representation.
 
 
-As soon as ``paxb`` is based on :py:mod:`attr` library, :py:func:`attr.asdict` function can
+Since ``paxb`` is based on :py:mod:`attr` library, :py:func:`attr.asdict` function can
 be used to serialize an object to a json string:
 
 .. doctest::

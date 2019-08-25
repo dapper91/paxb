@@ -3,7 +3,7 @@
 attrs library integration
 =========================
 
-As soon as ``paxb`` is based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library paxb and attrs
+Since ``paxb`` is based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library paxb and attrs
 APIs can be mixed together.
 
 

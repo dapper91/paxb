@@ -11,6 +11,9 @@ paxb
 .. image:: https://img.shields.io/pypi/pyversions/paxb.svg
     :target: https://pypi.org/project/paxb
     :alt: Supported Python versions
+.. image:: https://codecov.io/gh/dapper91/paxb/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/dapper91/paxb
+    :alt: Code coverage
 
 
 Python Architecture for XML Binding
@@ -28,7 +31,7 @@ paxb library implements the following functionality:
 paxb provides an efficient way of mapping between an XML document and a Python object. Using paxb
 developers can write less boilerplate code emphasizing on application business logic.
 
-As soon as paxb based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library paxb and attrs
+Since paxb based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library paxb and attrs
 API can be mixed together.
 
 
@@ -121,19 +124,19 @@ need to describe field mappings and types, paxb will serialize and deserialize d
         surname = pb.attr()
         age = pb.attr(converter=int)
 
-        _birth_year = pb.wrap('birthdate', pb.attr('year', converter=int))
-        _birth_month = pb.wrap('birthdate', pb.attr('month', converter=int))
-        _birth_day = pb.wrap('birthdate', pb.attr('day', converter=int))
+        birth_year = pb.wrap('birthdate', pb.attr('year', converter=int))
+        birth_month = pb.wrap('birthdate', pb.attr('month', converter=int))
+        birth_day = pb.wrap('birthdate', pb.attr('day', converter=int))
 
         @property
         def birthdate(self):
-            return date(year=self._birth_year, month=self._birth_month, day=self._birth_day)
+            return date(year=self.birth_year, month=self.birth_month, day=self.birth_day)
 
         @birthdate.setter
         def birthdate(self, value):
-            self._birth_year = value.year
-            self._birth_month = value.month
-            self._birth_day = value.day
+            self.birth_year = value.year
+            self.birth_month = value.month
+            self.birth_day = value.day
 
         phone = pb.wrap('contacts', pb.field())
         emails = pb.wrap('contacts', pb.as_list(pb.field(name='email')))
