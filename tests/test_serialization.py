@@ -611,3 +611,27 @@ def test_empty_wrapper_serialization():
     actual_xml = pb.to_xml(obj)
 
     assert not xmldiff.main.diff_texts(actual_xml, expected_xml.encode())
+
+
+def test_serialization_order():
+    @pb.model(order=('element2', 'element1'))
+    class TestModel:
+        element1 = pb.field()
+        element2 = pb.field()
+        element3 = pb.field()
+        element4 = pb.field()
+
+    obj = TestModel(element1='value1', element2='value2', element3='value3', element4='value4')
+
+    expected_xml = '''<?xml version="1.0" encoding="utf-8"?>
+    <TestModel>
+        <element2>value2</element2>
+        <element1>value1</element1>
+        <element3>value3</element3>
+        <element4>value4</element4>
+    </TestModel>
+    '''
+
+    actual_xml = pb.to_xml(obj)
+
+    assert not xmldiff.main.diff_texts(actual_xml, expected_xml.encode())

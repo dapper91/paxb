@@ -29,6 +29,11 @@ def model(maybe_cls=None, name=None, ns=None, ns_map=None, order=None, **kwargs)
 
     def decorator(cls):
         cls = attr.attrs(cls, **kwargs)
+        if order:
+            for element_name in order:
+                if not hasattr(getattr(cls, '__attrs_attrs__'), element_name):
+                    raise AssertionError("order element '{}' not declared in model".format(element_name))
+
         cls.__paxb_attrs__ = (name, ns, ns_map, order)
 
         return cls

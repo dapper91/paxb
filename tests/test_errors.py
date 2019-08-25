@@ -102,3 +102,10 @@ def test_nested_deserialization_error():
         match=r"required element '/test_model\[1\]/nested_model1\[1\]' not found"
     ):
         pb.from_xml(TestModel, xml)
+
+
+def test_order():
+    with pytest.raises(AssertionError, match=r"order element 'element2' not declared in model"):
+        @pb.model(order=('element1', 'element2'))
+        class TestModel:
+            element1 = pb.attr()

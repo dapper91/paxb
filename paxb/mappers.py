@@ -4,6 +4,8 @@ for mapping xml elements to python object fields and vise versa.
 """
 
 import abc
+import collections
+import operator as op
 import xml.etree.ElementTree as et
 
 import attr
@@ -74,6 +76,27 @@ def merge_dicts(*dicts):
             result.update(d)
 
     return result
+
+
+def reorder(fields, order, key):
+    """
+    Reorders `fields` list sorting its elements in order they appear in `order` list.
+    Elements that are not defined in `order` list keep the original order.
+
+    :param fields: elements to be reordered
+    :param order: iterable that defines a new order
+    :param key: a function of one argument that is used to extract a comparison key from each element in `fields`
+    :return: reordered elements list
+    """
+
+    ordered = collections.OrderedDict()
+    for field in fields:
+        ordered[key(field)] = field
+
+    for ord in reversed(order or ()):
+        ordered.move_to_end(ord, last=False)
+
+    return ordered.values()
 
 
 class Mapper(abc.ABC):
@@ -290,7 +313,6 @@ class ModelXmlMapper(Mapper):
     """
 
     def __init__(self, cls, name=None, ns=None, ns_map=None, idx=None, required=True):
-        # TODO: order
         model_name, model_ns, model_ns_map, self.order = get_attrs(cls)
         self.cls = cls
         self.name = first(name, model_name, cls.__name__)
@@ -314,7 +336,7 @@ class ModelXmlMapper(Mapper):
         element = et.Element(qname(ns=ns_map.get(ns), name=name))
 
         serialized_fields = []
-        for field in attr.fields(self.cls):
+        for field in reorder(attr.fields(self.cls), self.order, op.attrgetter('name')):
             mapper = field.metadata.get('paxb.mapper')
             if mapper:
                 serialized = mapper.xml(getattr(obj, field.name), element, field.name, ns, ns_map, encoder=encoder)
