@@ -373,7 +373,6 @@ def test_complex_xml_serialization():
 
         citizenship = pb.field(default='RU')
 
-
     occupation1 = Occupation(
         title='yandex',
         address='Moscow',
@@ -422,9 +421,9 @@ def test_complex_xml_serialization():
                     <data:employees>7742</data:employees>
                 </data:occupation>
             </data:occupations>
-            
+
             <doc:citizenship>RU</doc:citizenship>
-            
+
         </doc:user>
     </doc:envelope>
     '''

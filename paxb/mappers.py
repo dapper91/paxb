@@ -14,9 +14,9 @@ from . import encoder as default_encoder
 
 def get_attrs(cls):
     """
-    Returns all paxb attributes of a class decorated with `@model` decorator.
+    Returns all paxb attributes of a class decorated with :py:func:`paxb.model` decorator.
 
-    :param cls: `@model` decorated class
+    :param cls: :py:func:`paxb.model` decorated class
     :return: paxb class attributes
     """
 
@@ -52,7 +52,7 @@ def drop_nones(d):
 
 def first(*args):
     """
-    Returns first not None argument.
+    Returns first not `None` argument.
     """
 
     for item in args:
@@ -88,10 +88,11 @@ class Mapper(abc.ABC):
 
         :param obj: object to be serialized
         :param root: root element the object will be added inside
-        :param name: element name
-        :param ns: element namespace
-        :param ns_map: mapping from namespace prefix to full name
-        :param idx: element index in the xml tree
+        :type root: :py:class:`xml.etree.ElementTree.Element`
+        :param str name: element name
+        :param str ns: element namespace
+        :param dict ns_map: mapping from namespace prefix to full name
+        :param int idx: element index in the xml tree
         :param encoder: value encoder
         :return: added xml tree node
         """
@@ -102,11 +103,12 @@ class Mapper(abc.ABC):
         Deserialization method.
 
         :param xml: xml tree to deserialize the object from
-        :param name: element name
-        :param ns: element namespace
-        :param ns_map: mapping from namespace prefix to full name
-        :param idx: element index in the xml tree
-        :param full_path: full path to the current element
+        :type xml: :py:class:`xml.etree.ElementTree.Element`
+        :param str name: element name
+        :param str ns: element namespace
+        :param dict ns_map: mapping from namespace prefix to full name
+        :param int idx: element index in the xml tree
+        :param tuple full_path: full path to the current element
         :return: deserialized object
         """
 
@@ -158,6 +160,7 @@ class FieldXmlMapper(Mapper):
         self.required = required
 
     def xml(self, obj, root, name=None, ns=None, ns_map=None, _=None, encoder=default_encoder):
+        # TODO idx
         name = first(self.name, name)
         ns = first(self.ns, ns)
         ns_map = merge_dicts(self.ns_map, ns_map)
@@ -287,6 +290,7 @@ class ModelXmlMapper(Mapper):
     """
 
     def __init__(self, cls, name=None, ns=None, ns_map=None, idx=None, required=True):
+        # TODO: order
         model_name, model_ns, model_ns_map, self.order = get_attrs(cls)
         self.cls = cls
         self.name = first(name, model_name, cls.__name__)
@@ -296,6 +300,7 @@ class ModelXmlMapper(Mapper):
         self.required = required
 
     def xml(self, obj, root, name=None, ns=None, ns_map=None, _=None, encoder=default_encoder):
+        # TODO idx
         name = first(self.name, name)
         ns = first(self.ns, ns)
         ns_map = merge_dicts(self.ns_map, ns_map)
@@ -344,5 +349,6 @@ class ModelXmlMapper(Mapper):
                 cls_kwargs[attr_field.name] = mapper.obj(xml, attr_field.name, ns, ns_map, full_path=full_path + (tag,))
 
         cls_kwargs = drop_nones(cls_kwargs)
+        # TODO names
 
         return self.cls(**cls_kwargs)

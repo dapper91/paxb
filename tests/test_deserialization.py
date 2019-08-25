@@ -363,7 +363,9 @@ def test_complex_xml_deserialization():
         passport_series = pb.wrap('documents/passport', pb.attr('series'))
         passport_number = pb.wrap('documents/passport', pb.attr('number'))
 
-        occupations = pb.wrap('occupations', pb.lst(pb.nested(Occupation)), ns='data', ns_map={'data': 'http://www.test22.org'})
+        occupations = pb.wrap(
+            'occupations', pb.lst(pb.nested(Occupation)), ns='data', ns_map={'data': 'http://www.test22.org'}
+        )
 
         citizenship = pb.field(default='RU')
 
@@ -398,14 +400,14 @@ def test_indexes_deserialization():
     <root>
         <element>value1</element>
         <element>value2</element>
-        
+
         <wrapper>
             <element>value3</element>
         </wrapper>
         <wrapper>
             <element>value4</element>
         </wrapper>
-        
+
         <nested>
             <element>value5</element>
         </nested>

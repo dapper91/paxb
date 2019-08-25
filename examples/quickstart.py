@@ -1,6 +1,6 @@
+import pprint
 import re
 from datetime import date
-from pprint import pprint
 
 import attr
 import paxb as pb
@@ -9,8 +9,8 @@ import paxb as pb
 xml = '''<?xml version="1.0" encoding="utf-8"?>
 <doc:envelope xmlns="http://www.test.org"
               xmlns:doc="http://www.test1.org">
-    <doc:user name="Alexey" surname="Ivanov" age="26">
-    
+    <doc:user name="Alex" surname="Ivanov" age="26">
+
         <doc:birthdate year="1992" month="06" day="14"/>
 
         <doc:contacts>
@@ -52,19 +52,19 @@ class User:
     surname = pb.attr()
     age = pb.attr(converter=int)
 
-    birth_year = pb.wrap('birthdate', pb.attr('year', converter=int))
-    birth_month = pb.wrap('birthdate', pb.attr('month', converter=int))
-    birth_day = pb.wrap('birthdate', pb.attr('day', converter=int))
+    _birth_year = pb.wrap('birthdate', pb.attr('year', converter=int))
+    _birth_month = pb.wrap('birthdate', pb.attr('month', converter=int))
+    _birth_day = pb.wrap('birthdate', pb.attr('day', converter=int))
 
     @property
     def birthdate(self):
-        return date(year=self.birth_year, month=self.birth_month, day=self.birth_day)
+        return date(year=self._birth_year, month=self._birth_month, day=self._birth_day)
 
     @birthdate.setter
     def birthdate(self, value):
-        self.birth_year = value.year
-        self.birth_month = value.month
-        self.birth_day = value.day
+        self._birth_year = value.year
+        self._birth_month = value.month
+        self._birth_day = value.day
 
     phone = pb.wrap('contacts', pb.field())
     emails = pb.wrap('contacts', pb.as_list(pb.field(name='email')))
@@ -87,7 +87,8 @@ class User:
 try:
     user = pb.from_xml(User, xml, envelope='doc:envelope', ns_map={'doc': 'http://www.test1.org'})
     user.birthdate = user.birthdate.replace(year=1993)
-    pprint(attr.asdict(user))
+
+    pprint.pprint(attr.asdict(user))
 
 except (pb.exc.DeserializationError, ValueError) as e:
     print(f"deserialization error: {e}")

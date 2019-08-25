@@ -21,7 +21,8 @@ def model(maybe_cls=None, name=None, ns=None, ns_map=None, order=None, **kwargs)
     :param str name: model name. If `None` class name will be used
     :param str ns: element namespace. If `None` empty namespace will be used or if the model
                is a nested one - namespace is inherited from the containing model
-    :param dict ns_map: mapping from a namespace prefix to a full name. It is applied to the current model and it's elements and all nested models
+    :param dict ns_map: mapping from a namespace prefix to a full name. It is applied to the current model
+                        and it's elements and all nested models
     :param tuple order: class fields serialization order. If `None` in-class definition order is used
     :param kwargs: arguments that will be passed to :py:func:`attr.ib`
     """
@@ -90,7 +91,8 @@ def nested(cls, name=None, ns=None, ns_map=None, idx=None, **kwargs):
     :param cls: nested object class. `cls` must be an instance of :py:func:`paxb.model` decorated class
     :param str name: element name. If `None` model decorator `name` attribute will be used
     :param str ns: element namespace. If `None` model decorator ns attribute will be used
-    :param dict ns_map: mapping from a namespace prefix to a full name. It is applied to the current model and it's elements and all nested models
+    :param dict ns_map: mapping from a namespace prefix to a full name. It is applied to the current model
+                        and it's elements and all nested models
     :param int idx: element index in the xml document. If `None` 1 is used
     :param kwargs: arguments that will be passed to :py:func:`attr.ib`
     """
@@ -113,7 +115,8 @@ def wrapper(path, wrapped, ns=None, ns_map=None, idx=None):
     :param str path: full path to the `wrapped` element. Element names are separated by slashes
     :param wrapped: a wrapped element
     :param str ns: element namespace. If `None` the namespace is inherited from the containing model
-    :param dict ns_map: mapping from a namespace prefix to a full name. It is applied to the current model and it's elements and all nested models
+    :param dict ns_map: mapping from a namespace prefix to a full name. It is applied to the current model
+                        and it's elements and all nested models
     :param int idx: element index in the xml document. If `None` 1 is used
     """
 
