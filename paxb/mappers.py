@@ -182,11 +182,18 @@ class FieldXmlMapper(Mapper):
         self.idx = idx
         self.required = required
 
-    def xml(self, obj, root, name=None, ns=None, ns_map=None, _=None, encoder=default_encoder):
-        # TODO idx
+    def xml(self, obj, root, name=None, ns=None, ns_map=None, idx=None, encoder=default_encoder):
         name = first(self.name, name)
         ns = first(self.ns, ns)
         ns_map = merge_dicts(self.ns_map, ns_map)
+        idx = first(idx, self.idx, 1)
+
+        existing_elements = root.findall(qname(ns=ns_map.get(ns), name=name), ns_map)
+        if idx > len(existing_elements) + 1:
+            raise exc.SerializationError(
+                "serialization can't be completed because {name}[{cur}] is going to be serialized, "
+                "but {name}[{prev}] is not serialized.".format(name=name, cur=idx, prev=idx-1)
+            )
 
         if obj is None:
             if self.required:
@@ -241,7 +248,8 @@ class WrapperXmlMapper(Mapper):
         existing_elements = root.findall(qname(ns=ns_map.get(ns), name=self.name), ns_map)
         if idx > len(existing_elements) + 1:
             raise exc.SerializationError(
-                "element {} at index {} is going to be serialized, but the previous one is omitted".format(name, idx)
+                "serialization can't be completed because {name}[{cur}] is going to be serialized, "
+                "but {name}[{prev}] is not serialized.".format(name=name, cur=idx, prev=idx - 1)
             )
         if idx == len(existing_elements) + 1:
             element = et.Element(qname(ns=ns_map.get(ns), name=self.name))
@@ -321,11 +329,18 @@ class ModelXmlMapper(Mapper):
         self.idx = idx
         self.required = required
 
-    def xml(self, obj, root, name=None, ns=None, ns_map=None, _=None, encoder=default_encoder):
-        # TODO idx
+    def xml(self, obj, root, name=None, ns=None, ns_map=None, idx=None, encoder=default_encoder):
         name = first(self.name, name)
         ns = first(self.ns, ns)
         ns_map = merge_dicts(self.ns_map, ns_map)
+        idx = first(idx, self.idx, 1)
+
+        existing_elements = root.findall(qname(ns=ns_map.get(ns), name=name), ns_map)
+        if idx > len(existing_elements) + 1:
+            raise exc.SerializationError(
+                "serialization can't be completed because {name}[{cur}] is going to be serialized, "
+                "but {name}[{prev}] is not serialized.".format(name=name, cur=idx, prev=idx-1)
+            )
 
         if obj is None:
             if self.required:

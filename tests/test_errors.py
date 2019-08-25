@@ -109,3 +109,17 @@ def test_order():
         @pb.model(order=('element1', 'element2'))
         class TestModel:
             element1 = pb.attr()
+
+
+def test_indexes_deserialization():
+
+    @pb.model()
+    class TestModel:
+        field = pb.field(idx=2)
+
+    obj = TestModel(field="value1")
+    with pytest.raises(
+            exc.SerializationError,
+            match=r"serialization can't be completed because field\[2\] is going to be serialized, "
+                  r"but field\[1\] is not serialized."):
+        pb.to_xml(obj)
