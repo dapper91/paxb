@@ -370,7 +370,10 @@ class ModelXmlMapper(Mapper):
             if mapper:
                 cls_kwargs[attr_field.name] = mapper.obj(xml, attr_field.name, ns, ns_map, full_path=full_path + (tag,))
 
+        # Alter class initialization arguments that start with underscore (_). It is necessary because of
+        # `attrs` library implementation specific. See https://www.attrs.org/en/stable/init.html#private-attributes.
+        cls_kwargs = {k.lstrip('_'): w for k, w in cls_kwargs.items()}
+
         cls_kwargs = drop_nones(cls_kwargs)
-        # TODO names
 
         return self.cls(**cls_kwargs)

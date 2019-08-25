@@ -486,3 +486,22 @@ def test_attribute_default():
 
     obj = pb.from_xml(TestModel, xml)
     assert obj.attrib is None
+
+
+def test_private_attributes():
+    xml = '''<?xml version="1.0" encoding="utf-8"?>
+    <TestModel>
+        <field1>value1</field1>
+        <field2>value2</field2>
+    </TestModel>
+    '''
+
+    @pb.model()
+    class TestModel:
+        _field1 = pb.field(name='field1')
+        __field2 = pb.field(name='field2')
+
+    obj = pb.from_xml(TestModel, xml)
+
+    assert obj._field1 == 'value1'
+    assert obj._TestModel__field2 == 'value2'
