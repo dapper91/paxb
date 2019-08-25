@@ -15,6 +15,9 @@ paxb: Python Architecture for XML Binding
 .. image:: https://img.shields.io/pypi/pyversions/paxb.svg
     :target: https://pypi.org/project/paxb
     :alt: Supported Python versions
+.. image:: https://codecov.io/gh/dapper91/paxb/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/dapper91/paxb
+    :alt: Code coverage
 
 
 ``paxb`` is a library that provides an API for mapping between XML documents and Python objects.
@@ -29,7 +32,7 @@ paxb: Python Architecture for XML Binding
 ``paxb`` provides an efficient way of mapping between an XML document and a Python object. Using paxb
 developers can write less boilerplate code emphasizing on application domain logic.
 
-As soon as paxb is based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library ``paxb`` and attrs
+Since paxb is based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library ``paxb`` and attrs
 API can be :doc:`mixed <paxb/attrs>` together.
 
 
