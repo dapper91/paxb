@@ -55,7 +55,7 @@ By default an object fields serialized using the following rules:
 - :py:class:`bytes` field serialized using base64 encoding.
 - :py:class:`datetime.datetime` field serialized as iso formatted string.
 - :py:class:`datetime.date` field serialized as iso formatted string.
-- other types serialized using :py:meth:`__str__`.
+- other types serialized using :py:meth:`__str__` method.
 
 The default behaviour can be altered using ``encoder`` argument. Encoder must be a callable object that accepts
 an encoded value and returns its :py:class:`str` representation.

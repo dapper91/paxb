@@ -19,19 +19,19 @@ paxb
 Python Architecture for XML Binding
 -----------------------------------
 
-paxb is a library that provides an API for mapping between XML documents and Python objects.
+``paxb`` is a library that provides an API for mapping between XML documents and Python objects.
 
-paxb library implements the following functionality:
+``paxb`` library implements the following functionality:
 
 - Deserialize XML documents to Python objects
 - Validate deserialized data
 - Access and update Python object fields
 - Serialize Python objects to XML documents
 
-paxb provides an efficient way of mapping between an XML document and a Python object. Using paxb
-developers can write less boilerplate code emphasizing on application business logic.
+``paxb`` provides an efficient way of mapping between an XML document and a Python object. Using ``paxb``
+developers can write less boilerplate code emphasizing on application domain logic.
 
-Since paxb based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library paxb and attrs
+Since ``paxb`` based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library ``paxb`` and ``attrs``
 API can be mixed together.
 
 
@@ -96,10 +96,10 @@ Suppose you have an xml document ``user.xml``:
     </doc:envelope>
 
 
-To deserialize the document you could use `XML Processing Modules <https://docs.python.org/3/library/xml.html>`_
-python standard libraryr api to parse the document and then set the corresponding class fields. Such an imperative
-code has a lot of boilerplate manipulations. Instead you can use paxb api to write declarative style code. All you
-need to describe field mappings and types, paxb will serialize and deserialize data for you:
+To deserialize the document you could use `xml <https://docs.python.org/3/library/xml.html>`_ library api to parse
+the document and then access and modify the parsed xml DOM manually. Such an imperative code has a lot of boilerplate
+operations that takes a lot of time and can lead to bugs. Instead you can use ``paxb`` api to write a declarative
+style code. All you need to describe field mappings and types, ``paxb`` will serialize and deserialize data for you:
 
 .. code-block:: python
 
