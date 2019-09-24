@@ -7,7 +7,7 @@ Namespace inheritance
 ---------------------
 
 The default namespace of any element is an empty namespace. Functions :py:func:`paxb.field`, :py:func:`paxb.model`,
-:py:func:`paxb.wrapper` and :py:func:`paxb.nested` has a ``ns`` argument which alters the default (empty) namespace
+:py:func:`paxb.wrapper` and :py:func:`paxb.nested` have a ``ns`` argument which alters the default (empty) namespace
 by a passed one. Compare two examples:
 
 .. doctest::

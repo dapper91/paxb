@@ -42,7 +42,7 @@ using :py:func:`paxb.from_xml` additional arguments. Look at the example:
     User(name='Alex', surname='Ivanov', email='alex@gmail.com', phone='+79123457323')
 
 
-The ``required`` argument tells the deserializer to raise an exception if the element not found in the xml tree,
+The ``required`` argument tells the deserializer to raise an exception if the element is not found in the xml tree,
 otherwise ``None`` will be returned (see :ref:`Errors <errors>`).
 
 By default all fields deserialized as :py:class:`str` types. The default behaviour can be altered using a

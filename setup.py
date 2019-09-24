@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-import sys
+import pathlib
 import setuptools.command.test
+import sys
 from setuptools import setup, find_packages
 
-import paxb
 
 requirements = [
     'attrs~=19.0'
@@ -17,6 +17,18 @@ test_requirements = [
 
 with open('README.rst', 'r') as file:
     readme = file.read()
+
+
+def parse_about():
+    about_globals = {}
+    this_path = pathlib.Path(__file__).parent
+    about_module_text = pathlib.Path(this_path, 'paxb', '__about__.py').read_text()
+    exec(about_module_text, about_globals)
+
+    return about_globals
+
+
+about = parse_about()
 
 
 class PyTest(setuptools.command.test.test):
@@ -32,14 +44,14 @@ class PyTest(setuptools.command.test.test):
 
 
 setup(
-    name=paxb.__title__,
-    version=paxb.__version__,
-    description=paxb.__description__,
+    name=about['__title__'],
+    version=about['__version__'],
+    description=about['__description__'],
     long_description=readme,
-    author=paxb.__author__,
-    author_email=paxb.__email__,
-    url=paxb.__url__,
-    license=paxb.__license__,
+    author=about['__author__'],
+    author_email=about['__email__'],
+    url=about['__url__'],
+    license=about['__license__'],
     keywords=['xml', 'binding', 'mapping', 'serialization', 'deserialization'],
     python_requires=">=3.5",
     packages=find_packages(),

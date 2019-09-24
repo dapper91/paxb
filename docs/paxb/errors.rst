@@ -3,10 +3,10 @@
 Errors
 ======
 
-The package has two main exceptions: :py:exc:`paxb.exceptexcions.SerializationError` and
-:py:class:`paxb.exceptexcions.DeserializationError`.
+The package has two main exceptions: :py:exc:`paxb.exceptions.SerializationError` and
+:py:class:`paxb.exceptions.DeserializationError`.
 
-:py:class:`paxb.exceptexcions.DeserializationError` is raised when any deserialization error occurs.
+:py:class:`paxb.exceptions.DeserializationError` is raised when any deserialization error occurs.
 The most common case it is raised is a required element is not found in an xml tree. Look at the example:
 
 .. doctest::
@@ -43,7 +43,7 @@ or :py:func:`paxb.wrapper` element not found. This behaviour can be altered by p
 The same applies to :py:func:`paxb.field`, :py:func:`paxb.nested` and :py:func:`paxb.wrapper`.
 
 
-:py:class:`paxb.exceptexcions.SerializationError` is raised when any serialization error occurs.
+:py:class:`paxb.exceptions.SerializationError` is raised when any serialization error occurs.
 The most common case it is raised is a required element is not set. Look at the example:
 
 .. doctest::

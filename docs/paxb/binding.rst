@@ -7,7 +7,7 @@ model
 -----
 
 The :py:func:`paxb.model` decorator is used to describe a mapping of a python class to an xml element.
-All encountered class fields are mapped to xml subelements. In the following example ``User`` class
+All encountered class fields are mapped to the xml subelements. In the following example ``User`` class
 attributes ``name`` and ``surname`` are mapped to the corresponding xml elements. The model:
 
 .. code-block:: python
@@ -71,7 +71,7 @@ The name of the fields is used as an xml tag name for a mapping.
         <surname>Ivanov</surname>
     </User>
 
-Similarly to the :py:func:`paxb.model` decorator the default behavior can be altered using ``name`` argument.
+Similarly to the :py:func:`paxb.model` decorator the default behavior can be altered using the ``name`` argument.
 
 .. code-block:: python
 
@@ -182,7 +182,7 @@ nested class or wrapper (will be described later). Look at the example:
 wrapper
 -------
 
-It is common when a mapped element is placed in a subelement but declaring a nested class is redundant.
+It is common case when a mapped element is placed in a subelement but declaring a nested class is redundant.
 Here the :py:func:`paxb.wrapper` function comes forward. Let's look at the example:
 
 .. code-block:: python

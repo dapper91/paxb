@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.2.2 (2019-09-24)
+------------------
+
+- setup.py fixed.
+- some documentation typos fixed.
+
+
 0.2.1 (2019-08-26)
 ------------------
 

@@ -3,15 +3,15 @@
 
 ``paxb`` library implements the following functionality:
 
-    - Deserialize XML documents to Python objects
-    - Validate deserialized data
-    - Access and update Python object fields
-    - Serialize Python objects to XML documents
+- Deserialize XML documents to Python objects
+- Validate deserialized data
+- Access and update Python object fields
+- Serialize Python objects to XML documents
 
-paxb provides an efficient way of mapping between an XML document and a Python object. Using paxb
-developers can write less boilerplate code emphasizing on application business logic.
+``paxb`` provides an efficient way of mapping between an XML document and a Python object. Using ``paxb``
+developers can write less boilerplate code emphasizing on application domain logic.
 
-Since paxb based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library paxb and attrs
+Since ``paxb`` based on `attrs <https://www.attrs.org/en/stable/index.html>`_ library ``paxb`` and ``attrs``
 API can be mixed together.
 """
 
