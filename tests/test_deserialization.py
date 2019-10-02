@@ -282,30 +282,35 @@ def test_list_of_list_deserialization():
 
 def test_namespaces_deserialization():
     xml = '''<?xml version="1.0" encoding="utf-8"?>
-    <ns1:TestModel xmlns:ns1="http://www.test1.org"
-                   xmlns:ns2="http://www.test2.org">
+    <testns1:TestModel xmlns:testns1="http://www.test1.org"
+                   xmlns:testns2="http://www.test2.org"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.test.com schema.xsd">
         <element1>value1</element1>
-        <ns1:element2>value2</ns1:element2>
-        <ns2:element3>value3</ns2:element3>
-        <ns1:element4 xmlns:ns2="http://www.test22.org">
+        <testns1:element2>value2</testns1:element2>
+        <testns2:element3>value3</testns2:element3>
+        <testns1:element4 xmlns:testns2="http://www.test22.org">
             <element5>value5</element5>
-            <ns2:element6>value6</ns2:element6>
-        </ns1:element4>
-    </ns1:TestModel>
+            <testns2:element6>value6</testns2:element6>
+        </testns1:element4>
+    </testns1:TestModel>
     '''
 
-    @pb.model(ns='ns1', ns_map={'ns2': 'http://www.test2.org'})
+    @pb.model(ns='testns1', ns_map={'testns2': 'http://www.test2.org'})
     class TestModel:
+        schema = pb.attribute('schemaLocation', ns='xsi')
         element1 = pb.field(ns='')
         element2 = pb.field()
-        element3 = pb.field(ns='ns2')
+        element3 = pb.field(ns='testns2')
         element5 = pb.wrap('element4', pb.field(ns=''))
-        element6 = pb.wrap('element4', pb.field(ns='ns2'), ns_map={'ns2': 'http://www.test22.org'})
+        element6 = pb.wrap('element4', pb.field(ns='testns2'), ns_map={'testns2': 'http://www.test22.org'})
 
     model = pb.from_xml(TestModel, xml, ns_map={
-        'ns1': 'http://www.test1.org',
+        'testns1': 'http://www.test1.org',
+        'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
     })
 
+    assert model.schema == 'http://www.test.com schema.xsd'
     assert model.element1 == 'value1'
     assert model.element2 == 'value2'
     assert model.element3 == 'value3'

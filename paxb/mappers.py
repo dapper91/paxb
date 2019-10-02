@@ -136,18 +136,21 @@ class Mapper(abc.ABC):
         """
 
 
-# TODO: implement attribute namespaces
 class AttributeXmlMapper(Mapper):
     """
     Attribute to XMl mapper. Implements methods for mapping an xml attribute to a python object and vise versa.
     """
 
-    def __init__(self, name=None, required=True):
+    def __init__(self, name=None, ns=None, ns_map=None, required=True):
         self.name = name
+        self.ns = ns
+        self.ns_map = ns_map
         self.required = required
 
     def xml(self, obj, root, name=None, ns=None, ns_map=None, _=None, encoder=default_encoder):
         name = first(self.name, name)
+        ns = self.ns
+        ns_map = merge_dicts(self.ns_map, ns_map)
 
         if obj is None:
             if self.required:
@@ -156,14 +159,17 @@ class AttributeXmlMapper(Mapper):
                 return None
 
         attrib = encoder.encode(obj)
-        root.attrib[name] = attrib
+        root.attrib[qname(ns=ns_map.get(ns), name=name)] = attrib
 
         return attrib
 
     def obj(self, xml, name=None, ns=None, ns_map=None, _=None, full_path=()):
         name = first(self.name, name)
+        ns = self.ns
 
-        attribute = xml.get(name)
+        tag = qname(ns=ns_map.get(ns), name=name)
+
+        attribute = xml.get(tag)
         if attribute is None and self.required:
             raise exc.DeserializationError("required attribute '/{}' not found".format('/'.join(full_path + (name, ))))
 
