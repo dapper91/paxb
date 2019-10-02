@@ -46,12 +46,14 @@ def model(maybe_cls=None, name=None, ns=None, ns_map=None, order=None, **kwargs)
         return decorator(maybe_cls)
 
 
-def attribute(name=None, **kwargs):
+def attribute(name=None, ns=None, ns_map=None, **kwargs):
     """
     The Function maps a class field to an XML attribute. The field name is used
     as a default attribute name. The default name can be altered using the `name` argument.
 
     :param str name: attribute name. If `None` field name will be used
+    :param str ns: attribute namespace. If `None` empty namespace is used
+    :param dict ns_map: mapping from a namespace prefix to a full name.
     :param kwargs: arguments that will be passed to :py:func:`attr.ib`
     """
 
@@ -59,7 +61,7 @@ def attribute(name=None, **kwargs):
     required = not has_default
 
     attrib = attr.attrib(**kwargs)
-    attrib.metadata['paxb.mapper'] = mappers.AttributeXmlMapper(name, required)
+    attrib.metadata['paxb.mapper'] = mappers.AttributeXmlMapper(name, ns, ns_map, required)
 
     return attrib
 

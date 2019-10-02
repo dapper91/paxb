@@ -314,6 +314,7 @@ def test_namespaces_serialization():
 
     @pb.model(ns='testns1', ns_map={'testns2': 'http://www.test2.org'})
     class TestModel:
+        schema = pb.attribute('schemaLocation', ns='xsi')
         element1 = pb.field(ns='')
         element2 = pb.field()
         element3 = pb.field(ns='testns2')
@@ -321,6 +322,7 @@ def test_namespaces_serialization():
         element6 = pb.wrap('element4', pb.field(ns='testns2'), ns_map={'testns2': 'http://www.test22.org'})
 
     obj = TestModel(
+        schema='http://www.test.com schema.xsd',
         element1="value1",
         element2="value2",
         element3="value3",
@@ -330,7 +332,9 @@ def test_namespaces_serialization():
 
     expected_xml = '''<?xml version="1.0" encoding="utf-8"?>
     <testns1:TestModel xmlns:testns1="http://www.test1.org"
-                       xmlns:testns2="http://www.test2.org">
+                       xmlns:testns2="http://www.test2.org"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.test.com schema.xsd">
         <element1>value1</element1>
         <testns1:element2>value2</testns1:element2>
         <testns2:element3>value3</testns2:element3>
@@ -342,6 +346,7 @@ def test_namespaces_serialization():
     '''
 
     actual_xml = pb.to_xml(obj, ns_map={
+        'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
         'testns1': 'http://www.test1.org',
         'testns2': 'http://www.test2.org',
     })
