@@ -1,3 +1,4 @@
+import attr
 import xmldiff.main
 import paxb as pb
 
@@ -640,3 +641,35 @@ def test_serialization_order():
     actual_xml = pb.to_xml(obj)
 
     assert not xmldiff.main.diff_texts(actual_xml, expected_xml.encode())
+
+
+def test_dict_serialization():
+
+    @pb.model
+    class Nested:
+        fields = pb.as_list(pb.field())
+
+    @pb.model
+    class TestModel:
+        field = pb.field()
+        nested = pb.as_list(pb.nested(Nested))
+
+    obj = TestModel(
+        field='value1',
+        nested=[Nested(fields=['value21', 'value22']), Nested(fields=['value31', 'value32'])],
+    )
+
+    expected_dict = {
+        'field': 'value1',
+        'nested': [
+            {
+                'fields': ['value21', 'value22'],
+            },
+            {
+                'fields': ['value31', 'value32'],
+            },
+        ]
+    }
+
+    actual_dict = attr.asdict(obj)
+    assert actual_dict == expected_dict

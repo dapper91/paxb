@@ -28,7 +28,8 @@ def model(maybe_cls=None, name=None, ns=None, ns_map=None, order=None, **kwargs)
     """
 
     def decorator(cls):
-        cls = attr.attrs(cls, **kwargs)
+        attrs_kwargs = {'kw_only': True, **kwargs}
+        cls = attr.attrs(cls, **attrs_kwargs)
         if order:
             for element_name in order:
                 if not hasattr(getattr(cls, '__attrs_attrs__'), element_name):
@@ -48,7 +49,7 @@ def model(maybe_cls=None, name=None, ns=None, ns_map=None, order=None, **kwargs)
 
 def attribute(name=None, ns=None, ns_map=None, **kwargs):
     """
-    The Function maps a class field to an XML attribute. The field name is used
+    The function maps a class field to an XML attribute. The field name is used
     as a default attribute name. The default name can be altered using the `name` argument.
 
     :param str name: attribute name. If `None` field name will be used
@@ -68,7 +69,7 @@ def attribute(name=None, ns=None, ns_map=None, **kwargs):
 
 def field(name=None, ns=None, ns_map=None, idx=None, **kwargs):
     """
-    The Function maps a class field to an XML element. The field name is used
+    The function maps a class field to an XML element. The field name is used
     as a default element name. The default name can be altered using `name` argument.
     The `ns` argument defines the namespace of the element.
 
@@ -92,7 +93,7 @@ def field(name=None, ns=None, ns_map=None, idx=None, **kwargs):
 
 def nested(cls, name=None, ns=None, ns_map=None, idx=None, **kwargs):
     """
-    The Function maps a class to an XML element. `nested` is used when a :py:func:`paxb.model`
+    The function maps a class to an XML element. `nested` is used when a :py:func:`paxb.model`
     decorated class contains another one as a field.
 
     :param cls: nested object class. `cls` must be an instance of :py:func:`paxb.model` decorated class
@@ -107,9 +108,16 @@ def nested(cls, name=None, ns=None, ns_map=None, idx=None, **kwargs):
     if not isinstance(cls, type):
         raise TypeError("Passed object must be a class")
 
-    required = 'default' not in kwargs
+    def default_converter(value):
+        if isinstance(value, dict):
+            return cls(**value)
 
-    attrib = attr.attrib(**kwargs)
+        return value
+
+    required = 'default' not in kwargs
+    attrib_kwargs = {'converter': default_converter, **kwargs}
+
+    attrib = attr.attrib(**attrib_kwargs)
     attrib.metadata['paxb.mapper'] = mappers.ModelXmlMapper(cls, name, ns, ns_map, idx, required)
 
     return attrib
@@ -117,7 +125,7 @@ def nested(cls, name=None, ns=None, ns_map=None, idx=None, **kwargs):
 
 def wrapper(path, wrapped, ns=None, ns_map=None, idx=None):
     """
-    The Function is used to map a class field to an XML element that is contained by a subelement.
+    The function is used to map a class field to an XML element that is contained by a subelement.
 
     :param str path: full path to the `wrapped` element. Element names are separated by slashes
     :param wrapped: a wrapped element
@@ -134,12 +142,21 @@ def wrapper(path, wrapped, ns=None, ns_map=None, idx=None):
 
 def as_list(wrapped):
     """
-    The Function maps a class list field to an XML element list. Wrapped element
+    The function maps a class list field to an XML element list. Wrapped element
     can be field or nested model.
 
     :param wrapped: list element type
     """
 
+    original_converter = wrapped.converter
+
+    def list_converter(values):
+        if original_converter is not None and values is not None:
+            return [original_converter(value) for value in values]
+
+        return values
+
+    wrapped.converter = list_converter
     wrapped.metadata['paxb.mapper'] = mappers.ListXmlWrapper(wrapped.metadata['paxb.mapper'])
 
     return wrapped
@@ -161,7 +178,7 @@ def from_xml(cls, xml, envelope=None, name=None, ns=None, ns_map=None, required=
     :return: deserialized object
     """
 
-    if isinstance(xml, str):
+    if isinstance(xml, (str, bytes)):
         root = et.Element(None)
         root.append(et.fromstring(xml))
     else:

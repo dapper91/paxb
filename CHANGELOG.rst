@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.3.1 (2019-10-03)
+------------------
+
+- attr.attrs takes kw_only=True by default now.
+- nested model deserialization from dict fixed.
+
+
 0.3.0 (2019-10-02)
 ------------------
 
