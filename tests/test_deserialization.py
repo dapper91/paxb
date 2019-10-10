@@ -510,3 +510,32 @@ def test_private_attributes():
 
     assert obj._field1 == 'value1'
     assert obj._TestModel__field2 == 'value2'
+
+
+def test_dict_deserialization():
+
+    @pb.model
+    class Nested:
+        fields = pb.as_list(pb.field())
+
+    @pb.model
+    class TestModel:
+        field = pb.field()
+        nested = pb.as_list(pb.nested(Nested))
+
+    data = {
+        'field': 'value1',
+        'nested': [
+            {
+                'fields': ['value21', 'value22'],
+            },
+            {
+                'fields': ['value31', 'value32'],
+            },
+        ]
+    }
+
+    obj = TestModel(**data)
+
+    assert obj.field == 'value1'
+    assert obj.nested == [Nested(fields=['value21', 'value22']), Nested(fields=['value31', 'value32'])]
